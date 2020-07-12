@@ -1,3 +1,5 @@
+# 移动零
+
 ## 复杂度分析
 
 ### 时间复杂度
@@ -85,7 +87,7 @@ var moveZeroes = function(nums) {
 
 还有一种最简洁的，使用Javascript的排序(sort)API。
 
-- sort对数组是原地排序返回，改变原内容。详见[Array.prototype.sort()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+- sort对数组是原地排序返回，**改变原内容**。详见[Array.prototype.sort()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
 
 ```js
 /**
