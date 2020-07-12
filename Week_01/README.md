@@ -95,3 +95,8 @@
 - [24. 两两交换链表中的节点](https://github.com/shenlu89/algorithm012/blob/master/Week_01/24_SwapNodesinPairs.md)
 - [70. 爬楼梯](https://github.com/shenlu89/algorithm012/blob/master/Week_01/70_climbStairs.md)
 - [283. 移动零](https://github.com/shenlu89/algorithm012/blob/master/Week_01/283_MoveZeroes.md)
+
+参考链接：
+
+- [主定理](https://zh.wikipedia.org/wiki/%E4%B8%BB%E5%AE%9A%E7%90%86)
+- [如何理解算法时间复杂度的表示法，例如 O(n²)、O(n)、O(1)、O(nlogn) 等？](https://www.zhihu.com/question/21387264)
