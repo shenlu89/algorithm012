@@ -19,17 +19,16 @@
  * @return {number[]}
  */
 var preorder = function(root) {
-    if (!root) return [];
     let res = [];
-    recusion(root);
-    return res;
-    function recusion(root) {
-        if (!root) return;
-        res.push(root.val);
-        for (var i = 0; i < root.children.length; i++){
-            recusion(root.children[i]);
+    function recusion(node) {
+        if (!node) return;
+        res.push(node.val);
+        for(let i = 0, len = node.children.length; i < len; i++) {
+            recusion(node.children[i])
         }
     }
+    recusion(root);
+    return res;
 };
 ```
 
