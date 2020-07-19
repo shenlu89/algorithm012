@@ -2,7 +2,6 @@
 
 参考了[一套拳法👊刷掉n个遍历树的问题](https://leetcode-cn.com/problems/n-ary-tree-preorder-traversal/solution/yi-tao-quan-fa-shua-diao-nge-bian-li-shu-de-wen--3/)
 
-
 解法一：递归
 
 ```js
@@ -24,7 +23,7 @@ var preorder = function(root) {
         if (!node) return;
         res.push(node.val);
         for(let i = 0, len = node.children.length; i < len; i++) {
-            recusion(node.children[i])
+            recusion(node.children[i]);
         }
     }
     recusion(root);
@@ -69,18 +68,17 @@ var preorder = function(root) {
  * @return {number[]}
  */
 var preorder = function(root) {
-  let result = [], current = root;
-  while(current){
-    result.push(current.val);
-    let temp = current.children;
-    if(!temp.length) return result;
-    current = current.children.shift();
-    let next = current;
-    while (next.children.length) {
-      next = next.children[next.children.length - 1];
+    let res = []
+    if (root) {
+        let temp = [root]
+        while (temp.length) {
+            let node = temp.pop()
+            res.push(node.val)
+            for (let i = node.children.length - 1; i >= 0 ; i--) {
+                temp.push(node.children[i])
+            }
+        }
     }
-    next.children = temp;
-  }
-  return result;
-}
+    return res
+};
 ```

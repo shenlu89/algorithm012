@@ -17,9 +17,37 @@ var climbStairs = function(n) {
 };
 ```
 
+简化写法
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function(n) {
+ 	return n <= 2 ? n : climbStairs(n-1) + climbStairs(n-2); 
+};
+```
+
 但是超时了。
 
 减少重复计算版本
+
+```js
+const climbStairs = (n) => {
+  // 用一个数组保存每一次的结果
+  let arr = new Array(n)
+  for(let i = 1; i <= n; i++) {
+    if(i < 3) {
+      arr[i - 1] = i
+    } else {
+      // 逐一递推得到结果
+      arr[i - 1] = arr[i - 2] + arr[i - 3]
+    }
+  }
+  return n <= 0 ? 0 : arr[n - 1]
+}
+```
 
 ```js
 /**
@@ -66,6 +94,19 @@ var climbStairs = function(n) {
         second = third;
     }
     return second;
+};
+```
+
+ES6写法
+
+```js
+var climbStairs = function(n) {
+    let first = 1;
+    let second = 2;
+    while(--n){
+        [first, second] = [second, first+second];
+    }
+    return first;
 };
 ```
 

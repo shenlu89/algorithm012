@@ -19,6 +19,7 @@ O(1)
 
 解法一： 双指针解法
 
+
 ```js
 /**
  * @param {number[]} nums
@@ -28,6 +29,27 @@ var moveZeroes = function(nums) {
     for(let i = 0, j = 0, len = nums.length; i < len; i++) {
         if(nums[i] !== 0) {
             nums[j], nums[i] = nums[i], nums[j];
+            j++;
+        }
+    }
+    return nums；
+}
+```
+
+- 不是`nums[i] !== 0`的时候一`i`和'j'起前进
+- 当`nums[i] === 0`的时候，`i`继续寻找`！0`数，`j`留在`0`处等待交换。**当`j`停止活动，`i`向后移动的过程中，`j`和`i`之间(包括`j`和`i`)的值为0**，所以之后`j`每往前移动一位都会遇到0，和交换nums[i]都是在和`nums[j]`的`0`值交换位置。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var moveZeroes = function(nums) {
+    for(let i = 0, j = 0, len = nums.length; i < len; i++) {
+        if(nums[i] !== 0) {
+            if (j !== i) {
+                nums[j], nums[i] = nums[i], nums[j];
+            }
             j++;
         }
     }
