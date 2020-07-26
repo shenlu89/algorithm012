@@ -6,7 +6,7 @@
 
 - 中等：
 	- 二叉树的最近公共祖先（Facebook 在半年内面试常考）[236_LowestCommonAncestorofaBinaryTree.md](https://github.com/shenlu89/algorithm012/blob/master/Week_03/236_LowestCommonAncestorofaBinaryTree.md)
-	- 从前序与中序遍历序列构造二叉树（字节跳动、亚马逊、微软在半年内面试中考过）
+	- 从前序与中序遍历序列构造二叉树（字节跳动、亚马逊、微软在半年内面试中考过）[236_LowestCommonAncestorofaBinaryTree.md](https://github.com/shenlu89/algorithm012/blob/master/Week_03/236_LowestCommonAncestorofaBinaryTree.md)
 	- 组合（微软、亚马逊、谷歌在半年内面试中考过）
 	- 全排列（字节跳动在半年内面试常考）
 	- 全排列 II （亚马逊、字节跳动、Facebook 在半年内面试中考过）
