@@ -41,6 +41,23 @@ var majorityElement = function(nums) {
 };
 ```
 
+写的再简略一些就是
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var majorityElement = function(nums) {
+    let hash = {};
+    let index = nums.length/2;
+    for (let n of nums) {
+        hash[n] = (hash[n] || 0) + 1;
+        if (map[n] > index) return n;
+    }
+};
+````
+
 复杂度分析：
 
 - 时间复杂度 O(n) 
@@ -49,7 +66,17 @@ var majorityElement = function(nums) {
 解法三：抵消
 
 ```js
-
+var majorityElement = function(nums) {
+  let x = 0;
+  let m = 0;
+  for(let n of nums){
+    if(m === 0) {
+    	x = n;
+    }
+    m += x === n ? 1 : -1;
+  }
+  return x;
+};
 ```
 
 复杂度分析：

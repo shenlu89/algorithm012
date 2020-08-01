@@ -63,6 +63,31 @@ var fourSum = function(nums, target) {
 // let nums = [1,0,-1,0,-2,2];
 let nums = [1,-2,-5,-4,-3,3,3,5]
 
-console.log(nums.sort((a,b) => a-b));
+// console.log(nums.sort((a,b) => a-b));
 
-console.log(fourSum(nums, -11))
+// console.log(fourSum(nums, -11))
+
+var topKFrequent = function(nums, k) {
+    let map = {};
+    for (let n of nums) {
+        map[n] = (map[n] || 0) + 1;
+    }
+    return Object.entries(map).sort((a,b) => b[1]-a[1]).splice(0,k);
+};
+
+console.log(topKFrequent(nums, 1))
+
+var Element = function(nums) {
+    let res = [];
+    let map = {};
+    if (!nums || nums.length < 2) return res;
+    for (let n of nums) {
+        map[n] = (map[n] || 0) + 1;
+        if (map[n] === 2) res.push(n);
+    }
+    return res;
+}
+
+let nums1 = [4,3,2,7,8,2,3,1];
+
+console.log(Element(nums1));

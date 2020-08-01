@@ -7,18 +7,19 @@
  */
 var generateParenthesis = function(n) {
     let res = [];
-    function _generate(left, right, num, str) {
-        if (right === num) {
-            res.push(str);
+    function generate(left, right, s) {
+        if (left === n && right === n) {
+            res.push(s);
+            return;
         }
         if (left < n) {
-            _generate(left+1, right, num, str + "(");
+            generate(left+1, right, s+"(");
         }
         if (left > right) {
-            _generate(left, right+1, num, str + ")");
+            generate(left, right+1, s+")");
         }
     }
-    _generate(0, 0, n, '');
+    generate(0, 0, '');
     return res;
 };
 ```
