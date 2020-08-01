@@ -245,3 +245,22 @@ var maxDepth = function(root) {
     return level;
 };
 ```
+
+## 前 K 个高频元素
+
+解法一：hash+数组
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+var topKFrequent = function(nums, k) {
+    let map = {};
+    let arr = [...new Set(nums)];
+    for (let n of nums) {
+        map[n] = (map[n] || 0) + 1;
+    }
+    return arr.sort((a,b) => map[b] - map[a]).slice(0, k);
+};
