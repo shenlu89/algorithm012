@@ -264,3 +264,8 @@ var topKFrequent = function(nums, k) {
     }
     return arr.sort((a,b) => map[b] - map[a]).slice(0, k);
 };
+
+**参考文章**
+
+- [es6 扩展运算符 三个点（...）](https://blog.csdn.net/qq_30100043/article/details/53391308)
+- [js中两个等号(==)和三个等号(===)的区别](https://zhuanlan.zhihu.com/p/31565757)
