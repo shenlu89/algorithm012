@@ -264,6 +264,7 @@ var topKFrequent = function(nums, k) {
     }
     return arr.sort((a,b) => map[b] - map[a]).slice(0, k);
 };
+```
 
 **参考文章**
 
