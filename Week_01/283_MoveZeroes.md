@@ -80,6 +80,27 @@ var moveZeroes = function(nums) {
 }
 ```
 
+减少交换次数
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var moveZeroes = function(nums) {
+    for (let i = 0, j = i, len = nums.length; i<len; i++) {
+        if (nums[i] !== 0) {
+            if (i === j) {
+                j++;
+                continue;
+            }
+            [nums[j++], nums[i]] = [nums[i], nums[j]];
+        }
+    }
+    return nums;
+};
+```
+
 ## Javascript内置API解法
 
 解法二： 倒着遍历 + 数组操作

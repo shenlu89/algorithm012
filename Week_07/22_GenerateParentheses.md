@@ -1,7 +1,5 @@
 # 括号生成
 
-解法一： DFS
-
 ```js
 /**
  * @param {number} n
@@ -9,21 +7,19 @@
  */
 var generateParenthesis = function(n) {
     let res = [];
-    function generate(left, right, s) {
+    function generate(left, right, str) {
         if (left === n && right === n) {
-            res.push(s);
-            return;
+            res.push(str)
+            return
         }
         if (left < n) {
-            generate(left+1, right, s+"(");
+            generate(left+1, right, str+"(");
         }
         if (left > right) {
-            generate(left, right+1, s+")");
+            generate(left, right+1, str+")");
         }
     }
-    generate(0, 0, '');
+    generate(0, 0, "");
     return res;
 };
 ```
-
-时间复杂度O(2^n)

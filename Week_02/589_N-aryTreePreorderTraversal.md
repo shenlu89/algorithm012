@@ -82,3 +82,36 @@ var preorder = function(root) {
     return res
 };
 ```
+
+解法3: DFS
+
+```js
+/**
+ * // Definition for a Node.
+ * function Node(val, children) {
+ *    this.val = val;
+ *    this.children = children;
+ * };
+ */
+
+/**
+ * @param {Node} root
+ * @return {number[]}
+ */
+var preorder = function(root) {
+    let res = []
+    if (!root) return res;
+    res[0] = root.val;
+    let queue = root.children;
+    while(queue.length > 0){
+        let node = queue.shift();
+        if ( node!=null ) {
+            res.push(node.val);
+            if(node.children){
+                queue.unshift(...node.children);
+            }            
+        }       
+    }
+    return res
+};
+```
