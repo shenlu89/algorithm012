@@ -19,3 +19,25 @@ var isValid = function(s) {
     return !stack.length;
 };
 ```
+更好的写法
+
+```js
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isValid = function(s) {
+    let len = s.length;
+    if (len % 2) return false;
+    let stack = [];
+    for (let i = len-1, map = {"(":")", "[":"]", "{":"}"}; i >= 0; i--) {
+        let char = s.charAt(i);
+        if (map[char]) {
+            if(stack.pop() !== map[char]) return false;
+        } else {
+            stack.push(char)
+        }
+    }
+    return !stack.length;
+};
+```

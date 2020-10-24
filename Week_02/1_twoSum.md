@@ -45,3 +45,18 @@ var twoSum = function(nums, target) {
 ```
 
 这样更简洁一些。
+
+
+```js
+var twoSum = function(nums, target) {
+    for (let i = nums.length-1, map = {}; i >= 0; i--) {
+        let key = nums[i];
+        let diff = target - key;
+        if (map[key] === undefined) {
+            map[diff] = i;
+        } else {
+            return [i, map[key]];
+        }
+    }
+};
+```
