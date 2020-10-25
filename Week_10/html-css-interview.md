@@ -1281,6 +1281,7 @@ ajax(url).then(res => console.log(res)).catch(err => console.log(err))
 - Content-type 返回数据的格式，如 application/json
 - Content-length 返回数据的大小，多少字节
 - Content-Encoding 返回数据的压缩算法，如gzip
+- Cache-Control 返回数据添加强制缓存
 - Set-Cookie
 
 #### 之定义header
@@ -1304,3 +1305,356 @@ ajax(url).then(res => console.log(res)).catch(err => console.log(err))
 - 什么是缓存？
 - 为什么需要缓存（页面加载速度更快，减少服务器端压力，应对网络的不稳定环境。网络请求的加载相比于CPU的计算，包括页面的渲染都是非常慢的一个事情，如果做性能优化和让网页显示的更快，从网络请求入手）
 - 哪些资源可以被缓存？—— 静态资源(js css img)
+
+## 14-7 cache-control是什么意思-http强制缓存
+
+### http 缓存 - 强制缓存
+
+#### Cache-Control
+
+- Response Headers中
+- 控制强制缓存的逻辑
+- 例如 Cache-Control: max-age=31536000 (单位是秒)
+
+#### cache-control 的值
+
+- max-age 缓存最大过期事件
+- no-cache 不使用本地强制缓存，服务端缓存不管
+- no-cache 不使用本地缓存，而且不使用服务端的缓存措施
+- private 只允许最终用户做缓存
+- public 允许中间路由和代理做缓存
+
+#### 关于Expires
+
+- 同在 Response Headers 中
+- 同为控制缓存过期
+- 已被 Cache-Control 代替
+
+## 14-8 Etag和Last-Modified是什么意思-http协商缓存
+
+### http 缓存 - 协商缓存（对比缓存）
+
+- 服务器端缓存策略 （服务器端来判断一个资源是否可以被缓存，是否可以用缓存）
+- 服务器判断客户端资源，是否和服务器端资源一样
+- 一致则返回304，否则返回200和最新的资源
+
+过程
+
+- 客户端初次请求服务器资源
+- 服务器返回资源和资源标识
+- 客户端再次请求资源并带有上次服务器端返回的资源标识
+- 返回304，或者返回新的资源和资源标识
+
+#### 资源标识
+
+- 在Response Headers中，有两种
+- Last-Modified 资源的最后修改时间
+- Etag 资源的唯一标识（一个字符串，类似人类的指纹）
+
+#### Last-Modified
+
+- 初次请求
+- 返回资源，和Last-Modified
+- 再次请求，Request Headers带着If-Modified-Since
+- 返回304，或返回资源和新的Last-Modified
+
+#### Etag
+
+- 初次请求
+- 返回资源和Etag
+- 再次请求，Request Headers 带着 If-None-Match
+- 返回 304，或返回资源和新的Etag
+
+#### Etag和Last-Modified
+
+- Last-Modified和Etag共存，会优先使用Etag
+- Last-Modified只能精确到秒级
+- 如果资源被重复生成，而内容不变，则Etag更精确
+
+#### http 缓存 - 综述
+
+图
+
+## 14-9 刷新页面对http缓存的影响
+
+### 三种刷新操作
+
+- 正常操作：地址栏输入url，跳转链接，前进后退等
+- 手动刷新：F5，点击刷新按钮，右击菜单刷新
+- 强制刷新： ctrl + F5
+
+不同刷新操作，不同的缓存策略
+
+- 正常操作：强制缓存有效，协商缓存有效
+- 手动刷新：强制缓存失效，协商缓存有效
+- 强制刷新：强制缓存失效，协商缓存失效
+
+小结
+
+- 强制缓存 Cache-Control
+- 协商缓存 Last-Modified 和 Etag， 304状态码
+- 完整的流程图
+
+## 14-10 http考点总结
+
+http 面试 - 总结
+
+- http 状态码
+- http method
+- Restful API
+- http headers
+- http 缓存策略
+
+## 15-1 前端开发常用的开发工具
+
+### 关于开发环境
+
+- 面试官想通过开发环境了解候选人的实际工作情况
+- 开发环境的工具，能体现工作产出效率
+- 会以聊天形式为主，不会问具体的问题
+
+### 开发环境
+
+- Git
+- 调试工具
+- 抓包
+- webpack babel
+- linux 常用命令
+
+## 15-2 什么是 git
+
+- 最常用的代码版本管理工具
+- 大型项目需要多人协作开发，必须熟用git
+- 如果你不知道或者之前不用git，不会通过面试
+
+#### git
+
+- Mac OS 自带 git 命令，windows 可去官网下载安装
+- git 服务端常见的有 github coding.net
+- 大公司会搭建自己的内网git服务
+
+#### 常用git命令
+
+- git add .
+- git checkout xxx
+- git commit -m 'xxx'
+- git push origin master
+- git pull origin master
+- git branch
+- git checkout -b xxx/ git checkout xxx
+- git merge xxx
+
+## 15-3 git 的常用命令有哪些
+
+看极客时间课程
+
+## 15-5 如何用 chrome 调试 js 代码
+
+### chrome 调试工具
+
+- 一般不会面试考察
+- 但这是前端工程师必备的技能（不算知识）
+
+常用的调试工具有
+
+- Elements
+- Console
+- Debugger
+- Network
+- Application
+
+### 15-6 移动端 h5 如何抓包网络请求
+
+- 移动端h5页，查看网络请求，需要用工具抓包
+- windows 一般用 fiddler
+- Mac OS 一般用 charles
+
+#### 抓包
+
+- 手机和电脑连同一个局域网
+- 将手机代理到电脑上
+- 手机浏览网页，即可抓包
+
+#### 抓包演示
+
+- 查看网络请求
+- 网址代理
+- https
+
+## 15-7 如何配置 webpack
+
+### webpack 和 babel
+
+- ES6 模块化，浏览器暂不支持
+- ES6 语法，浏览器并不完全支持
+- 压缩代码，整合代码，让网页加载更快
+
+## 15-8 如何配置 babel
+
+## 15-9 ES6 模块化规范是什么
+
+```js
+// a.js
+export function fn() {
+    console.log('fn')
+}
+
+export const name = 'a'
+export const obj = {
+    name: 'zhangsan'
+}
+```
+
+```js
+// index.js
+import { fn, name, obj } from './a' // 解构赋值
+fn()
+console.log(name)
+console.log(obj)
+```
+
+```js
+// b.js
+function fn() {
+    console.log('fn')
+}
+
+const name = 'a'
+const obj = {
+    name: 'zhangsan'
+}
+
+export {
+    fn,
+    name,
+    obj
+}
+
+// 上面是ES6的一个简写形式，当导入的名字和定义的名字一样的时候可以用，下面的才是完整写法
+// export {
+//     fn: fn
+//     name: name
+//     obj: obj
+// }
+```
+
+```js
+// index.js
+import { fn, name, obj } from './b' // 解构赋值
+fn()
+console.log(name)
+console.log(obj)
+```
+
+```js
+// c.js
+const xxx = {
+    name: "xxx"
+}
+
+export default xxx
+```
+
+```js
+// index.js
+import xxx from './c'
+console.log(xxx)
+```
+
+```js
+// b.js
+function fn() {
+    console.log('fn')
+}
+
+const name = 'a'
+const obj = {
+    name: 'zhangsan'
+}
+
+export default {
+    fn,
+    name,
+    obj
+}
+```
+
+```js
+// index.js
+import b from './b' // 解构赋值
+b.fn()
+console.log(b.name)
+console.log(b.obj)
+```
+
+## 15-10 如何配置 webpack 生产环境
+
+## 15-11 前端用到的 linux 常用命令有哪些
+
+- 公司的线上机器一般都是linux（参考阿里云）
+- 测试机也需要保持一致，用linux
+- 测试机或者线上机出了问题，本地又不能复现，需要去排查
+
+
+## 开发环境
+
+- git
+- 调试工具
+- 抓包
+- webpack babel
+- linux常用命令
+
+## 16-1 JS 上线之后在什么哪里运行？
+
+- 运行环境即浏览器（server端有node.js）
+- 下载网页代码，渲染出页面，期间会执行若干JS
+- 要保证代码在浏览器中：稳定且高效
+
+### 运行环境
+
+- 网页加载过程
+- 性能优化
+- 安全
+
+## 16-2 网页是如何加载并渲染出来的
+
+题目
+
+- 从输入url到渲染出页面的整个过程
+- window.onload 和 DOMContentLoaded的区别
+
+知识点
+
+- 加载资源的形式
+- 加载资源的过程
+- 渲染页面的过程
+
+### 资源的形式
+
+- html 代码
+- 媒体文件，如图片，视频等
+- javascript css
+
+#### 加载过程
+
+>这部分看浏览器工作原理
+
+- DNS 解析：域名 -> IP地址
+- 浏览器根据IP地址向服务发起http请求
+- 服务器处理http请求，并返回给浏览器
+
+#### 渲染过程
+
+- 根据HTML代码生成DOM tree
+- 根据CSS代码生成CSSOM
+- 将 DOM Tree 和 CSSOM 整合形成 Render Tree
+- 根据 Render Tree 渲染页面
+- 如果遇到<script>则暂停渲染，优先加载并执行JS代码，完成再继续
+- 直至把 Render Tree 渲染完成
+
+## 16-3 网页加载和渲染的示例
+
+### 思考
+
+- 为何建议把css放在head中？
+- 为何建议把js放在body最后？
