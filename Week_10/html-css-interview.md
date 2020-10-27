@@ -1656,5 +1656,832 @@ console.log(b.obj)
 
 ### 思考
 
-- 为何建议把css放在head中？
-- 为何建议把js放在body最后？
+1. 为何建议把css放在head中？ // 关键渲染路径
+
+2. 为何建议把js放在body最后？ // 关键渲染路径 
+
+3. window.onload 和 DOMContentLoaded
+
+```js
+window.addEventListener('load', function() {
+    // 页面的全部资源加载完才会执行，包括图片，视频等
+})
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM 渲染完即可执行，此时图片，视频还可能没有加载完
+})
+```
+
+## 问题解答
+
+- 从输入url到渲染出页面的整个过程
+- window.onload 和 DOMContentLoaded 的区别
+
+1. 从输入url到渲染出页面的整个过程
+
+- 下载资源：各个资源类型，下载过程
+- 渲染页面：结合html css javascript 图片等
+
+2. window.onload 和 DOMContentLoaded
+
+- window.onload 资源全部加载完成才能执行，包括图片
+- DOMContentLoaded DOM 渲染完成即可，图片可能尚未下载
+
+代码测试
+
+```js
+const img1 = document.getElementById('img1')
+img1.onload = function () {
+    console.log('img loaded')
+}
+
+window.addEventListener('load', function() {
+    console.log('window loaded')
+})
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('dom content loaded')
+})
+```
+
+## 16-5 前端性能优化有哪些方式
+
+### 性能优化
+
+- 是一个综合性问题，没有标准答案，但要求尽量全面
+- 某些细节问题可能会单独提问：手写防抖、节流
+- 只关注核心点，针对面试
+
+### 性能优化原则
+
+- 多使用内存、缓存或其他方法
+- 减少CPU计算量，减少网络加载耗时
+- 以上适用于所有编程的性能优化 ——— 空间换时间
+
+### 从何入手
+
+- 让加载更快
+- 让渲染更快
+
+#### 让加载更快
+
+- 减少资源体积：压缩代码
+- 减少访问次数：合并代码，SSR 服务器端渲染，缓存
+
+#### 让渲染更快
+
+- CSS 放在 head，JS 放在 body 最下面
+- 尽早开始执行 JS，用 DOMContentLoaded触发
+- 懒加载（图片懒加载，上滑加载更多）
+- 对 DOM 查询进行缓存
+- 频繁 DOM 操作，合并到一起插入 DOM
+- 节流 throttle 防抖 debounce
+
+## 16-6 前端性能优化的示例
+
+#### 资源合并
+
+
+#### 缓存
+
+- 静态资源加hash后缀，根据文件内容计算hash
+- 文件内容不变，则hash不变，则url不变
+- url和文件不变，则会自动触发http请求缓存机制，返回304
+
+#### CDN
+
+#### SSR
+
+- 服务器端渲染：将网页和数据一起加载，一起渲染
+- 非SSR（前后端分离）：先加载网页，再加载数据，再渲染数据
+- 早先的JSP ASP PHP，现在的Vue React SSR
+
+#### 懒加载
+
+```js
+<img id="img1" src="preview.png" data-realsrc="abc.png">
+<script type="text/javascript">
+    var img1 = document.getElementById('img1')
+    img1.src = img1.getAttribute('data-realsrc')
+</script>
+```
+
+#### 缓存 DOM 查询
+
+#### 频繁 DOM 操作，合并到一起插入 DOM
+
+#### 尽早开始 JS 执行
+
+## 16-7 手写防抖 debounce
+
+### 防抖 debounce
+
+- 监听一个输入框的，文字变化后触发 change 事件
+- 直接用 keyup 事件，则会频发触发 change 事件
+- 防抖：用户输入结束或暂停时，才会触发 change 事件
+
+代码实例
+
+```html
+<input type="text" id="input1">
+<script src="./debounce.js">
+```
+
+```js
+// debounce.js
+const input1 = document.getElementById('input1')
+let timer = null
+input1.addEventListener('keyup', function() {
+    if (timer) {
+        clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+        // 触发 change 事件
+        console.log(input1.value)
+        // 清空定时器
+        timer = null
+    }, 500)
+})
+```
+
+封装一下 debounce 函数
+
+```js
+function debounce(fn, delay = 500) {
+    // timer 是闭包中的
+    let timer = null
+    return function () {
+        if (timer) {
+            clearTimemout(timer)
+        }
+        timer = setTimeout(() => {
+            fn.apply(this, arguments)
+            timer = null
+        }, delay)
+    }
+}
+
+input.addEventListener('keyup', debounce(function() {
+    console.log(input1.value)
+}), 600)
+```
+
+#### 节流 throttle
+
+节流和防抖不同，防抖在频繁输入和频繁操作完成后触发；节流是在在频繁输入和频繁操作过程中，保持一个频率连续触发
+
+- 拖拽一个元素时，要随时拿到该元素被拖拽的位置
+- 直接用drag事件，则会触发触发，很容易导致卡顿
+- 节流：无论拖拽速度多快，都会每隔100ms触发一次
+
+```html
+<div id="div1" draggable="true">可拖拽</div>
+<script src="./throttle.js"></script>
+```
+
+```js
+const div1 = document.getElementById('div1')
+
+let timer = null
+div1.addEventListener('drag', function(e) {
+    if (timer) {
+        return
+    }
+    timer = setTimeout(() => {
+        console.log(e.offsetX, e.offsetY)
+        timer = null
+    }, 100)
+})
+```
+封装一下 throttle 函数
+
+```js
+function throttle(fn, delay = 100) {
+    let timer = null
+    return function() {
+        if (timer) {
+            return
+        }
+        timer = setTimeout(() => {
+            fn.apply(this, arguments)
+            timer = null
+        }, delay)
+    }
+}
+
+div1.addEventListener('drag', throttle(function(e){
+    console.log(e.offsetX, e.offsetY)
+}), 100)
+```
+
+## 16-9 如何预防 xss 攻击
+
+### 安全
+
+- 问题：常见的web前端攻击方式有哪些？
+- XSS 跨站请求攻击
+- XSRF 跨站请求伪造
+
+#### XSS 攻击
+
+跨站脚本攻击(Cross-site scripting, XSS)
+
+- 一个博客网站，我发表一篇博客，其中嵌入<script>脚本
+- 脚本内容：获取cookie，发送到我的服务器（服务器配合跨域）
+- 发布这篇博文，有人查看它，我轻松收割访问者的cookie
+
+```html
+<script>alert(document.cookie);</script>
+```
+
+#### XSS 预防
+
+- 替换特殊字符，如 < 变为 &lt; > 变为 &gt;
+- <script> 变为 &lt;script&gt;，直接显示，而不会作为脚本执行
+- 前端要替换，后端也要替换，都做总不会有错
+
+## 16-10 如何预防 xsrf 攻击
+
+### XSRF 攻击
+
+- 你正在购物，看中了某个商品，商品id是100
+- 付费接口是xxx.com/pay?id=100,但没有任何验证
+- 我是攻击者，我看中了一个商品，id是200
+- 我向你发送一封电子邮件，邮件标题很吸引人
+- 但邮件正文隐藏着<img src="xxx.com/pay?id=200"/>
+- 你一查看邮件，就帮我购买了id是200的商品
+
+### XSRF预防
+
+- 使用 post 接口
+- 增加验证，例如密码，短信验证码，指纹等
+
+
+## 16-11 运行环境的考点总结
+
+### 运行环境
+
+- 网站加载过程
+- 性能优化
+- 安全
+
+#### 网页加载过程
+
+- 加载资源的形式
+- 加载资源的过程
+- 渲染页面过程
+
+#### 性能优化 - 让加载更快
+
+- 减少资源体积：压缩代码
+- 减少访问次数：合并代码，SSR 服务器端渲染，缓存
+- 使用更快的网络：CDN
+
+#### 性能优化 - 让渲染更快
+
+- CSS放在head，JS放在body最下面
+- 尽早开始执行JS，用 DOMContentLoaded 触发
+- 懒加载（图片懒加载，上滑加载更多）
+- 对 DOM 查询进行缓存
+- 频繁 DOM 操作，合并到一起插入
+- 节流 throttle 防抖 debounce
+
+#### 安全
+
+- XSS 跨站请求攻击和防御
+- XSRF 跨站请求伪造和防御
+
+## 17-1 课程总结~
+
+- 知识点 -> 题目
+- 回顾知识点，思维导图
+- 回顾之前的所有问题
+
+### 思维导图
+
+图
+
+## 17-2 面试技巧
+
+- 关于简历
+- 面试过程中注意事项
+
+### 关于简历
+
+- 简洁明了，突出个人技能和项目经验
+- 可以把个人博客、开源作品放在简历中（但博客要有内容）
+- 不要造假，保证能力上的真实性（斟酌用词，如精通xxx）
+
+### 面试过程中注意事项
+
+- 如何看待加班：像借钱，救急不救穷
+- 千万不要挑战面试官，反考面试官
+- 学会给面试官惊喜，证明你能想到更多，做的更好，但不要太多
+- 遇到不会的问题，说出你知道的部分即可，但别岔开话题
+- 谈一谈你的缺点：说一下你最近在学什么即可
+
+## 18-1 章节介绍
+
+### 面试真题
+
+- 搜集网上的高频JS初级面试题
+- 验证和复习之前学过的知识
+- 补充其他技能，如正则表达式，数组 API
+
+## 18-2 题目讲解-1：何为变量提升？
+
+### 题目
+
+1. var 和 let const 的区别
+
+- var 是 ES5 语法， let const 是 ES6 语法；var 有变量提升
+- var 和 let 是变量，可修改；const 是常量，不可修改；
+- let const 有块级作用域，var 没有
+  
+```js
+// 变量提升 ES5
+console.log(a)
+var a = 200
+
+//等价于
+
+var a
+console.log(a)
+a = 200
+
+for (var i = 0; i < 10; i++) {
+    var j = i + 1
+}
+console.log(i, j) // 10 10
+
+// 块级作用域
+for (let i = 0; i < 10; i++) {
+    var j = i + 1
+}
+console.log(i, j) // 报错
+```
+
+1. typof 返回哪些类型
+
+- undefined string number boolean symbol
+- object (注意，typeof null === 'object')
+- function
+
+2. 列举强制类型转换和隐式类型转换
+
+- 强制：parseInt, parseFloat toString
+- 隐式：if, 逻辑运算，==, +拼接字符串
+
+## 18-3 题目讲解-2：手写深度比较 isEqual
+
+1. 手写深度比较，模拟 lodash isEqual
+
+```js
+// 实现如下效果
+const obj1 = {a: 10, b: { x: 100, y: 200 }}
+const obj2 = {a: 10, b: { x: 100, y: 200 }}
+isEqual(obj, obj2) === true
+```
+
+代码演示
+
+```js
+function isObject(obj) {
+    return typeof obj === 'object' && obj !== null
+}
+// 全相等
+function isEqual(obj1, obj2) {
+    if (isObject(obj1) && isObject(obj2)) {
+        // 先取出 obj1 和 obj2 的 keys, 比较个数
+        const obj1Keys = Reflect.ownKeys(obj1)
+        const obj2Keys = Reflect.ownKeys(obj2)
+        if (obj1Keys.length !== obj2Keys) {
+            return false
+        }
+        // 2. 以 obj1 为基准，和 obj2 依次递归比较
+        // let...in适用于数组和对象
+        for (let key of obj1Keys) {
+            // 比较当前 key 的 val -- 递归!!!
+            if(!isEqual(obj1[key], obj2[key])) {
+                return false;
+            }
+        }
+
+    } else {
+        // 值类型
+        return obj1 === obj2
+    }
+    // 3. 全相等
+    return true;
+}
+```
+
+2. split() 和 join() 的区别
+
+```js
+'1-2-3'.split('-') // [1, 2, 3]
+[1,2,3].join('-') // '1-2-3'
+```
+
+3. 数组的 pop push unshift shift 分别做什么
+
+- 功能是什么？
+- 返回值是什么？
+- 是否会对原数组造成影响
+
+```js
+const arr = [10, 20, 30, 40]
+
+// pop
+const popRes = arr.pop() // 40
+console.log(popRes, arr)
+
+// shift
+const shiftRes = arr.shift() // 10
+console.log(shiftRes, arr)
+
+// push
+const pushRes = arr.push(50) // 3 (返回 length)
+console.log(pushRes, arr)
+
+// unshift
+const unshiftRes = arr.unshift(5) // 4 (返回 length)
+console.log(unshiftRes, arr)
+
+
+【扩展】数组的API，有哪些是纯函数？
+
+- 纯函数：1. 不改变原数组（没有副作用）；2.返回一个数组
+const arr = [10, 20, 30, 40]
+
+// concat
+const arr1 = arr.concat([50, 60, 70])
+
+// map
+const arr2 = arr.map(num => num * 10)
+
+// filter
+const arr3 = arr.filter(num => num > 25)
+
+// slice
+const arr4 = arr.slice() // 类似于深拷贝，但并不是，数组中的obj是共享引用的
+
+// 非纯函数
+// push pop shift unshif
+// forEach
+// some every
+// reduce
+// splice
+```
+
+## 18-4 题目讲解-3：你是否真的会用数组 map
+
+1. 数组 slice 和 splice 的区别？
+
+- 功能区别（slice - 切片， splice - 剪切）
+- 参数和返回值
+- 是否是纯函数
+
+```js
+const arr = [10, 20, 30, 40, 50]
+
+// slice 纯函数
+const arr1 = arr.slice() // [10, 20, 30, 40, 50]
+const arr2 = arr.slice(1, 4) // [20, 30, 40]
+const arr3 = arr.slice(2) // [30, 40, 50]
+const arr4 = arr.slice(-2) // [30, 40]
+
+// splice 非纯函数
+const spliceRes = arr.splice(1, 2, 'a', 'b', 'c')
+console.log(spliceRes, arr) // [10, 'a', 'b', 'c', 40, 50]
+```
+
+1. [10, 20, 30].map(parseInt) 返回结果是什么？
+
+- map 的参数和返回值
+- parseInt 参数和返回值
+
+代码演示
+
+```js
+const res = [10, 20, 30].map(parseInt)
+console.log(res) // 10 NaN NaN
+
+// 拆解
+[10, 20, 30].map((num, index) => {
+    return parseInt(num, index)
+})
+```
+
+1. ajax 请求 get 和 post 的区别？
+
+- get 一般用于查询操作，post一般用户提交操作
+- get 参数拼接在url上，post放在请求体内（数据体积可更大）
+- 安全性: post 易于防止 CSRF
+
+## 18-5 题目讲解-4：再学闭包
+
+1. 函数 call 和 apply 的区别？
+
+```js
+fn.call(this, p1, p2, p3) // 参数一个一个分开传参
+fn.apply(this, arguments) // 参数是一个数组或类数组
+```
+
+>call 和 apply的使用可以相互转换
+
+2. 事件代理（委托）是什么？
+
+3. 闭包是什么？有何特性？有何影响？
+
+- 回顾作用域和自由变量
+- 回顾闭包应用场景：作为参数被传入，作为返回值被返回
+- 回顾：自由变量的查找要在函数定义的地方（而非执行的地方）
+- 影响：变量会常驻内存，得不到释放。闭包不要乱用
+
+```js
+// 闭包 函数作为返回值 - 内存不会被释放
+function create() {
+    let a = 100
+    return funciton() {
+        console.log(a)
+    }
+}
+let fn = create()
+let a = 200
+fn() // 100
+
+// 闭包 函数作为参数被传入 - 内存不会被释放
+function print(fn) {
+    let a = 200
+    fn()
+}
+let a = 100
+function fn() {
+    console.log(a)
+}
+print(fn) // 100
+```
+
+## 18-6 面试讲解-5：回顾 DOM 操作和优化
+
+1. 如何阻止事件冒泡和默认行为？
+
+- event.stopPropagation()
+- event.preventDefault()
+
+2. 查找，添加，删除，移动 DOM 节点的方法
+
+
+
+3. 如何减少 DOM 操作？
+
+减少 DOM 操作的原因是 DOM 操作非常“昂贵”
+
+- 缓存 DOM 查询结果
+- 多次 DOM 操作，合并到一次插入
+
+## 18-7 面试讲解-6：jsonp 本质是 ajax 吗
+
+1. 解释jsonp的原理，为何它不是真正的ajax?
+
+ajax 是通过 XMLHttpRequest 实现的， jsonp 是通过 <script> 实现的
+
+- 浏览器的同源策略（服务器端没有同源策略）和跨域
+- 哪些 html 标签能绕过跨域？
+- jsonp的原理
+
+```js
+<script>
+    window.abc = function(data) {
+        console.log(data)
+    }
+</script>
+<script src="http://localhost:8002/jsonp.js?username=xxx&callback=abc"></script>
+```
+
+
+1. document load 和 ready 的区别
+
+2. == 和 === 的区别
+
+- == 会尝试类型转换
+- === 严格相等
+- 哪些场景才用 == ?
+
+## 18-8 面试讲解-7：是否用过 Object.create()
+
+1. 函数声明和函数表达式的区别
+
+- 函数声明 function fn() {...}
+- 函数表达式 const fn = function() {...}
+- 函数声明会在代码执行前预加载，而函数表达式不会
+
+```js
+const res = sum(10, 20)
+console.log(res)
+
+// 函数声明
+function sum(x, y) {
+    return x + y
+}
+
+// 函数表达式
+const sum = function(x, y) {
+    return x + y
+}
+```
+
+1. new Object() 和 Object.create() 的区别
+
+- {} 等同于 new Object()，原型 Object.prototype
+- Object.create(null) 没有原型
+- Object.create({...}) 可指定原型
+
+```js
+const obj1 = {
+    a: 10,
+    b: 20,
+    sum() {
+        return this.a + this.b
+    }
+}
+
+let obj2 = new Object({
+    a: 10,
+    b: 20,
+    sum() {
+        return this.a + this.b
+    }
+})
+
+console.log(obj1 === obj2) // false;
+console.log(obj1 == obj2) // false;
+
+obj2 = new Object(obj1)
+
+console.log(obj1 === obj2) // true
+
+const obj3 = Object.create(null)
+const obj4 = new Object() // 等同于 const obj4 = {}
+
+const obj5 = Object.create(new Object({
+    a: 10,
+    b: 20,
+    sum() {
+        return this.a + this.b
+    }
+})) // 参数会放在一个空对象的原型中
+
+const obj6 = Object.create(obj1)
+obj1.c = 1000
+console.log(obj6.c) // 1000
+console.log(obj6.__proto__ === obj1) // true
+console.log(obj6 === obj1)
+```
+
+1. 关于 this 的场景题
+
+```js
+const User = {
+    count: 1,
+    getCount: function() {
+        return this.count
+    }
+}
+console.log(User.getCount()) // 1
+const func = User.getCount
+console.log(func()) // undefined
+```
+
+## 18-9 面试讲解-8：常见的正则表达式
+
+正则表达式是一个脱离了语言和平台的标准规范
+
+1. 关于作用域和自由变量的场景题 - 1
+
+```js
+let i
+for(i = 1; i<= 3; i++) {
+    setTimeout(function(){
+        console.log(i)
+    }, 0)
+}
+
+// 4
+// 4
+// 4
+```
+
+3. 判断字符串以字母开头，后面字母数字下划线，长度6-30
+
+- [正则表达式入门教程](https://deerchao.cn/tutorials/regex/regex.htm)
+- [REGEXPER](https://regexper.com/)
+
+```js
+const reg = /^[a-zA-Z]\w{5,29}/
+
+// 邮政编码
+/\d{6}/
+
+// 小写英文字母
+/^[a-z]+$/
+
+// 英文字母
+/^[a-zA-Z]+$/
+
+// 日期格式 2019-12-1
+/^\d{4}-\d{1,2}=\d{1,2}$/
+
+// 用户名
+/^[a-zA-Z]\w{5,17}$/
+
+// 简单的 IP 地址
+/\d+\.\d+\.\d+\.\d+/
+```
+
+1. 关于作用域和自由变量的场景题 - 1
+
+```js
+let a = 100
+function test() {
+    alert(a)
+    a = 10
+    alert(a)
+}
+test()
+alert(a)
+// 100
+// 10
+// 10
+```
+
+## 18-10 面试讲解-9：如何获取最大值
+
+1. 手写字符串 trim 方法，保证浏览器兼容性
+
+```js
+String.prototype.trim = function() {
+    return this.replace(/^\s+/, '').replace(/\s+$/, '')
+}
+// 原型、this、正则表达式
+```
+
+- 如何获取多个数字中的最大值
+
+```js
+Math.max(10, 30, 20, 40)
+```
+
+- 如何用JS实现继承
+
+- class 继承
+- prototype 继承
+
+## 18-11 面试讲解-10：解析 url 参数
+
+1. 如何捕获JS程序异常?
+
+```js
+try {
+    // todo
+} catch (ex) {
+    console.error(ex) // 手动捕获 catch
+} finally {
+    // todo
+}
+
+// 自动捕获
+window.onerror = function(message, source, lineNum, colNum, error) {
+    // 第一，对跨域的 js，如 CDN 的，不会有详细的报错信息
+    // 第二，对于压缩的 js，还要配合 sourceMap 反查到未压缩代码的行、列
+}
+```
+
+2. 什么是JSON?
+
+- json 是一种数据格式，本质是一段字符串
+- json 格式和 js 对象结构一致，对 JS 语言更友好
+- window.JSON 是一个全局对象：JSON.stringify JSON.parse
+
+```js
+{
+    "name": "张三"
+}
+// 属性名必须用引号括起来
+// 字符串要使用双引号，不能用单引号
+```
+
+1. 获取当前url参数
+
+- 传统方式，查找 location.search
+- 新 API，URLSearchParams
+
+
+```js
+"?a=10&b=20&c=30"
+// 传统方式
+function query(name) {
+    const search = location.search.substr(1) // 类似 arrary.slice(1)
+    const reg = new RegExp()
+}
+```
