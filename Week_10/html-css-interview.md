@@ -2478,10 +2478,182 @@ window.onerror = function(message, source, lineNum, colNum, error) {
 
 
 ```js
-"?a=10&b=20&c=30"
+// search: "?a=10&b=20&c=30"
 // 传统方式
 function query(name) {
     const search = location.search.substr(1) // 类似 arrary.slice(1)
-    const reg = new RegExp()
+    const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i') // new RegExp(`(^|&)`,'i')等同于 /(^|&)/i
+    const res = search.match(reg)
+    console.log(res)
+    if (res === null) {
+        return null
+    }
+    return res[2]
+}
+
+query('b') // 20
+query('d') // null
+
+// URLSearchParams
+function query(name) {
+    const search = location.search
+    const p = new URLSearchParams(search)
+    return p.get(name)
+}
+query('a') // 10
+```
+
+## 18-12 面试讲解-11：数组去重有几种方式？
+
+1. 将url参数解析为JS对象
+
+2. 手写数组flatern，考虑多层
+
+```js
+flat([[1,2], 3, [4,5, [6, 7, [8, 9, [10, 11]]]]])
+// [1,2,3,4,5,6,7,8,9,10,11]
+
+function flat(arr) {
+    // 验证 arr 中，还有没有深层数组 [1, 2, [3, 4]]
+    isDeep = arr.some(item => item instanceof Array)
+    if (!isDeep) {
+        return arr  // 已经是 flatern [1, 2, 3, 4]
+    }
+    const res = Array.prototype.concat.apply([], arr)
+    return flat(arr) // 递归
+})
+
+const res = flat( [1, 2, [3, 4], 5] )
+console.log(res)
+
+// Array 原生 API
+var arr = [1, 2, [3, 4], 5]
+Array.prototype.concat.apply([], arr) // [1, 2, 3, 4, 5]
+
+// 等价于
+Array.prototype.concat.call([], 1, 2, [3, 4], 5)
+
+// 等价于
+[].concat(1, 2, [3, 4], 5)
+```
+
+3. 数组去重
+
+- 传统方式，遍历元素挨个比较、去重
+- 使用Set
+- 考虑计算效率
+
+```js
+// 传统方式
+function unique(arr) {
+    const res = []
+    arr.forEach(item => {
+        if (res.indexOf(item) < 0) {
+            res.push(item)
+        }
+    })
+    return res
+}
+
+// 使用 Set 方式
+function unique(arr) {
+    const set = new Set(arr)
+    return [...set]
+}
+
+const res = unique([30, 10, 20, 30, 40, 10])
+console.log(res)
+```
+
+## 18-13 面试讲解-12：是否用过 requestAnimationFrame
+
+1. 手写深拷贝
+
+```js
+function deepClone(obj = {}) {
+    if (typeof obj !== 'object' || obj === null) {
+        // obj 是 null, 或者不是对象和数组，直接返回
+        return obj
+    }
+    // 初始化返回结果
+    let result
+    if (obj instanceof Array) {
+        result = []
+    } else {
+        result = {}
+    }
+    for (let key in obj) {
+        // 保证 key 不是原型的属性
+        if (obj.hasOwnProperty(key)) {
+            // 递归调用
+            result[key] = deepClone(obj[key])
+        }
+    }
+    // 返回结果
+    return result
 }
 ```
+
+> 注意，Object.assign不是深拷贝！
+
+例如
+
+```js
+const obj = {a: 10, b: 20, c:30}
+// 追加信息到obj
+Object.assign(obj, {d: 40})
+console.log(obj) // {a: 10, b: 20, c:30, d: 40}
+const obj1 = Object.assign({}, obj, {e: 50})
+console.log(obj) // {a: 10, b: 20, c:30, d: 40}
+console.log(obj1) // {a: 10, b: 20, c:30, d: 40, e: 50}
+obj.a = 100
+console.log(obj1) // {a: 10, b: 20, c:30, d: 40, e: 50}
+
+// 虽然 obj1没有受到obj.a变化的影响，但是 Object.assign 并没有对 obj 做一个深拷贝，只是在 obj 第一层级做了一个拷贝，没有更深层的拷贝
+
+// 举个例子
+const obj = {a: 10, b: {x: 100, y: 100}}
+const obj1 = Object.assign({}, obj, {c: 30})
+obj.b.x = 101
+console.log(obj1) // {a: 10, b: {x: 101, y: 100}, c: 30}
+```
+
+1. 介绍一下 RAF requestAnimationFrame
+
+- 想要动画流畅，更新频率要60帧/s，即16.67ms更新一次视图
+- setTimeout 要动手控制频率，而 RAF 浏览器会自动控制
+- 后台标签或隐藏iframe中，RAF会暂停，而setTimeout依然执行
+
+```js
+// 3s 把宽度从 100px 变为 640px，即增加 540px
+// 60帧/s，3s 180 帧，每次变化 3px
+
+const $div = $('#div1')
+let curWidth = 100
+const maxWidth = 640
+
+// setTimeout
+function animate() {
+    curWidth = curWidth + 3
+    $div.css('width', curWidth)
+    if (curWidth < maxWidth) {
+        setTiemout(animate, 16.7) // 自己控制时间
+    }
+}
+
+function animate() {
+    curWidth = curWidth + 3
+    $div.css('width', curWidth)
+    if (curWidth < maxWidth) {
+        window.requestAnimationFrame(animate) // 时间不用自己控制
+    }
+}
+
+// 切换浏览器tab页面的时候，requestAnimationFrame会停止执行，而setTimeout会继续执行
+```
+
+1. 前端性能如何优化？一般从几个方面进行考虑？
+
+- 原则：多使用内存，缓存，减少计算，减少网络请求
+- 方向：加载页面，页面渲染，页面操作流畅度
+
