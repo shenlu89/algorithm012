@@ -1,5 +1,7 @@
 # 快速排序
 
 ```js
-Array.prototype
+function quickSort(arr) {
+    
+}
 ```

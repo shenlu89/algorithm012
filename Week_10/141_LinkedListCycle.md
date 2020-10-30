@@ -61,3 +61,34 @@ var hasCycle = function(head) {
 ```
 
 - `!head || !head.next`也可以改成`!(head && head.next)`
+
+另一种写法
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function(head) {
+    if(!head || !head.next) {
+        return false
+    }
+    let [slow, fast] = [head, head.next]
+    while(fast && fast.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow === fast) {
+            return true
+        }
+    }
+    return false;
+};
+```
