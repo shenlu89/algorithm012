@@ -370,13 +370,23 @@ commonJS {
 
 ## 11月4日
 
-上午看完
+上午
 
+- [] 看完HMTL/CSS部分视频
 - [] class基本用法和class的继承
+
+下午
+
 - [] 弄懂所有排序算法
+- [] 手写深拷贝
+
+晚会
+
 - [] 写完Vue2.x和Vue3.0的两个todo List版本
 
 ## 11月5日
 
 - [] promise和setTimeout作用域复杂情况
 - [] 看HTML/CSS两个部分的视频
+- [] Array中的常用函数
+- [] [今年行情这么差，到底如何进大厂？](https://juejin.im/post/6844903632056352782)
